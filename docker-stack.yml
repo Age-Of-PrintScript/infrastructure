@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  snippet-service:
+    image: ghcr.io/age-of-printscript/snippet-service:${ENV}
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://snippet-db:5432/snippet_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+    deploy: 
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    networks:
+        - app-network
+  snippet-db:
+        image: postgres:16-alpine
+        environment:
+          POSTGRES_DB: snippet_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        volumes:
+          - snippet-db-data:/var/lib/postgresql/data
+        networks:
+          - app-network
+networks:
+  app-network:
+      driver: overlay
+volumes:
+  snippet-db-data:
