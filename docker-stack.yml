@@ -11,21 +11,64 @@ services:
     deploy: 
       replicas: 1
       restart_policy:
-        condition: on-failure
+        condition: on-failure  # solo se reinicia si falla
     networks:
         - app-network
+
   snippet-db:
-        image: postgres:16-alpine
-        environment:
-          POSTGRES_DB: snippet_db
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-        volumes:
-          - snippet-db-data:/var/lib/postgresql/data
-        networks:
-          - app-network
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: snippet_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - snippet-db-data:/var/lib/postgresql/data
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure  # solo se reinicia si falla
+    networks:
+      - app-network
+    env_file:
+      - .env
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    restart: unless-stopped
+    ports:
+      - "10000:10000"  # puerto para el blob storage - archivos
+      - "10001:10001"  # puerto para el queue storage - mensajes
+      - "10002:10002"  # puerto para el table storage - datos estructurados
+    volumes:
+      - blob:/workspace
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any  # siempre se reinicia por que siempre tiene que estar disponible
+    networks:
+      - app-network
+
+  asset-service:
+    image: ghcr.io/austral-ingsis/snippet-asset-service:main.14
+    ports:
+      - "8083:8080"
+    environment:
+      AZURE_HOST: "http://azurite"
+      NEW_RELIC_APP_NAME: "asset-service"
+      NEW_RELIC_AGENT_ENABLED: null
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure  # solo se reinicia si falla
+    networks:
+      - app-network
+    env_file:
+      - .env
+
 networks:
   app-network:
       driver: overlay
+
 volumes:
   snippet-db-data:
+  blob:
