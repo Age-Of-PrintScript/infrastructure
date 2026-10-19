@@ -8,6 +8,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - ASSET_SERVICE_URL=http://asset-service:8080
+      - PRINTSCRIPT_SERVICE_URL=http://printscript-service:8080
 
     deploy: 
       replicas: 1
@@ -62,6 +63,20 @@ services:
       replicas: 1
       restart_policy:
         condition: on-failure  # solo se reinicia si falla
+    networks:
+      - app-network
+    env_file:
+      - .env
+  printscript-service:
+    image: ghcr.io/age-of-printscript/printscript-service:${ENV}
+    ports:
+      - "8082:8080"
+    environment:
+      - ASSET_SERVICE_URL=http://asset-service:8080
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
     networks:
       - app-network
     env_file:
