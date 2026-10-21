@@ -1,0 +1,9 @@
+services:
+  permission-service:
+    image: ghcr.io/age-of-printscript/permissions-service:${ENV}
+    ports:
+      - "8081:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/permission_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: ${PERMISSION_POSTGRES_PASSWORD}

@@ -94,7 +94,7 @@ docker stack deploy -c docker-stack.yml ingsis --with-registry-auth
 ```bash
 # 1. Exportar variables del .env y desplegar
 export $(grep -v '^#' .env | xargs)
-docker stack deploy -c docker-stack.yml ingsis --with-registry-auth
+docker stack deploy -c printscript-stack.yml ingsis --with-registry-auth
 ```
 
 
