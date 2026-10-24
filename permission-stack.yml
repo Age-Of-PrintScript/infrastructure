@@ -21,7 +21,7 @@ services:
     environment:
       POSTGRES_DB: permission_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${PERMISSION_POSTGRES_PASSWORD}
     volumes:
       - permission-db-data:/var/lib/postgresql/data
     deploy:
@@ -30,7 +30,8 @@ services:
         condition: on-failure
     networks:
       - app-network
-
+    env_file:
+      - .env
 volumes:
   permission-db-data:
 
