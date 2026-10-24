@@ -9,6 +9,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - ASSET_SERVICE_URL=http://asset-service:8080
       - PRINTSCRIPT_SERVICE_URL=http://printscript-service:8080
+      - PERMISSIONS_SERVICE_URL=http://permission-service:8080
 
     deploy:
       replicas: 1

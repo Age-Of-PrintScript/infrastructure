@@ -4,6 +4,37 @@ services:
     ports:
       - "8081:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/permission_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://permission_db:5432/permission_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: ${PERMISSION_POSTGRES_PASSWORD}
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure  #solo se reinicia si falla
+    networks:
+      - app-network
+    env_file:
+      - .env
+
+  permission_db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: permission_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${PERMISSION_POSTGRES_PASSWORD}
+    volumes:
+      - permission-db-data:/var/lib/postgresql/data
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    networks:
+      - app-network
+    env_file:
+      - .env
+volumes:
+  permission-db-data:
+
+networks:
+  app-network:
+    driver: overlay
