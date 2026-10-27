@@ -10,6 +10,8 @@ services:
       - ASSET_SERVICE_URL=http://asset-service:8080
       - PRINTSCRIPT_SERVICE_URL=http://printscript-service:8080
       - PERMISSIONS_SERVICE_URL=http://permission-service:8080
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
 
     deploy:
       replicas: 1
@@ -36,6 +38,7 @@ services:
       - app-network
     env_file:
       - .env
+
 networks:
   app-network:
     driver: overlay

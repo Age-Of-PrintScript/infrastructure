@@ -5,6 +5,8 @@ services:
       - "8082:8080"
     environment:
       - ASSET_SERVICE_URL=http://asset-service:8080
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     deploy:
       replicas: 1
       restart_policy:
@@ -14,6 +16,21 @@ services:
     env_file:
       - .env
 
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    networks:
+      - app-network
+
 networks:
   app-network:
       driver: overlay
+
+volumes:
+  redis-data:
